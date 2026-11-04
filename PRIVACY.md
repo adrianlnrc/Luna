@@ -16,6 +16,7 @@ Página inicial do projeto: https://github.com/adrianlnrc/agente-telegram
 - **Convites do Google Calendar recebidos** pela pessoa: o assistente lê o título, o horário e o organizador para avisar e, se a pessoa tocar em Aceitar ou Recusar, responde ao convite em nome dela.
 - **Documentos** que a pessoa manda para guardar (fotos, PDFs, vídeos e outros arquivos): o assistente guarda apenas o identificador do arquivo no Telegram e dados de organização (título, pasta, data de vencimento); **o conteúdo do arquivo continua no Telegram** e não é copiado para o servidor. O conteúdo só passa pela OpenAI quando for foto ou PDF enviado para interpretação (como recibos).
 - **Listas, notas e projetos** (itens, textos livres, tarefas e prazos) que a pessoa pede para guardar, em texto, no banco, separados por pessoa.
+- **Importação de agenda de papel** (fotos de uma agenda ou planner): a foto é enviada à OpenAI para ler os compromissos e tarefas e **não é guardada**; ficam no banco só os títulos, dias e horários do rascunho (apagados depois de 30 dias) até a pessoa confirmar ou cancelar. Ao confirmar, os compromissos vão para o Google Agenda e as tarefas para o Google Tarefas da própria pessoa. Os projetos do assistente também podem ser espelhados no Google Tarefas (tarefa-pai e subtarefas), guardando no banco apenas os identificadores das tarefas no Google.
 - **Preferências** da pessoa (como o horário do resumo diário e o dia de fechamento do mês financeiro).
 - **Tarefas do Google Tasks**, quando a pessoa autoriza a conexão: o assistente cria, lista e conclui tarefas pedidas.
 - **Dados do Google Calendar**, quando a pessoa autoriza a conexão: o assistente **lê** os eventos do dia ou do período pedido e **cria** eventos que a pessoa solicitou. Ele **muda, cancela e responde a convites** apenas depois que a pessoa confirma por botão, e só envia convites a terceiros quando a pessoa confirma a lista de convidados. Não compartilha a agenda com terceiros.
@@ -27,6 +28,7 @@ Somente para executar o que a pessoa pediu: criar lembretes e eventos, avisar no
 ## Com quem os dados são compartilhados
 
 - **OpenAI:** o conteúdo das mensagens, o áudio e as fotos (inclusive recibos) são enviados à API da OpenAI para serem transcritos e interpretados. As requisições são feitas com o armazenamento de respostas desativado, e a OpenAI não usa dados enviados pela API para treinar seus modelos, conforme os termos dela para a API.
+- **OpenAI (pesquisa na web):** quando a pessoa faz uma pergunta sobre um fato atual ou externo (câmbio, preço, regra), **apenas a pergunta**, reescrita sem dados pessoais, é enviada à OpenAI com a ferramenta de busca na web; nada da agenda, das finanças ou dos contatos vai junto. As fontes (título e link) vêm das páginas encontradas, e o texto da web é tratado só como informação. O uso de IA (tokens e custo estimado) fica registrado no banco.
 - **Google (Calendar):** para ler e criar eventos, conforme a autorização concedida.
 - **Telegram:** para receber e enviar as mensagens.
 
