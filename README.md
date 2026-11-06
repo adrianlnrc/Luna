@@ -163,3 +163,9 @@ Cada pessoa tem as próprias finanças (nada é compartilhado). Tudo é dito em 
 3. Prompt e schema JSON da IA.
 4. Testes de aceitação.
 5. Construção no n8n, por fases, testando junto.
+
+## Secretaria natural (Etapas 1 a 3)
+
+- `db/033_acoes_recentes.sql`: lote de varias acoes por mensagem, "Desfazer tudo" e correcao por texto das acoes recentes.
+- `db/034_tom_preferencias.sql`: confirmacoes de preferencias em tom de secretaria.
+- `db/035_memoria_unificada.sql` e `db/035_contrato.md`: memoria por pessoa (teto de 40 fatos), listagens de pessoas e lugares, oferta de salvar, sugestao diaria e interruptores. A oferta de salvar e a sugestao do dia estao desligadas no workflow por enquanto (custo de tempo de execucao no n8n).
