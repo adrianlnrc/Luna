@@ -169,3 +169,4 @@ Cada pessoa tem as próprias finanças (nada é compartilhado). Tudo é dito em 
 - `db/033_acoes_recentes.sql`: lote de varias acoes por mensagem, "Desfazer tudo" e correcao por texto das acoes recentes.
 - `db/034_tom_preferencias.sql`: confirmacoes de preferencias em tom de secretaria.
 - `db/035_memoria_unificada.sql` e `db/035_contrato.md`: memoria por pessoa (teto de 40 fatos), listagens de pessoas e lugares, oferta de salvar, sugestao diaria e interruptores. A oferta de salvar e a sugestao do dia estao desligadas no workflow por enquanto (custo de tempo de execucao no n8n).
+- `db/036_menu_secretaria.sql` e `db/036_menu_contrato.md`: menu reformulado em 9 areas, com "Ver mais", correcao por texto na tela inicial e a lista de comandos recomendada para o BotFather.
