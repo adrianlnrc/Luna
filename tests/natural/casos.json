@@ -1,0 +1,1606 @@
+{
+ "versao": 1,
+ "observacao": "esperado = comportamento desejado (spec-secretaria-natural.md). origem: historico = mensagem real vista nas execucoes do n8n (Redis/banco guardam pouco historico); banco = reescrita a partir de registros reais (lembretes, gastos); spec = falha conhecida da spec; sintetico = inventada para cobrir. tags marcam recursos ainda nao construidos. Grupo memoria (Etapa 3): campos mem_facts, new_person, new_place, mem_action; casos com 'estado' semeiam a oferta pendente no Redis.",
+ "casos": [
+  {
+   "id": "ag-01",
+   "grupo": "agenda",
+   "origem": "historico",
+   "mensagem": "tenho uma consulta dia 09/11 as 17:40 no gastro vou te confirmar o local",
+   "esperado": {
+    "intent": "create_event",
+    "campos": {
+     "title": {
+      "contem": "consulta"
+     },
+     "date": {
+      "data": "md:11-09"
+     },
+     "time": "17:40"
+    }
+   }
+  },
+  {
+   "id": "ag-02",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "reserve uma mesa na pizzaria Fratello Uno de Águas Claras às 18:00 e marque na minha agenda",
+   "tags": [
+    "pedido_parcial"
+   ],
+   "obs": "Frase da pizzaria: regra 48 hoje recusa tudo e proibe create_event.",
+   "esperado": {
+    "intent": "create_event",
+    "campos": {
+     "title": {
+      "contem_algum": [
+       "fratello",
+       "pizzaria"
+      ]
+     },
+     "time": "18:00",
+     "date": {
+      "data": "hoje_ou_amanha"
+     },
+     "location": {
+      "contem_algum": [
+       "fratello",
+       "aguas claras"
+      ]
+     }
+    },
+    "resposta_nao_promete": true,
+    "resposta_honesta_reserva": true
+   }
+  },
+  {
+   "id": "ag-03",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "jantar no outback a dois no sábado às 20h",
+   "tags": [],
+   "esperado": {
+    "intent": "create_event",
+    "campos": {
+     "title": {
+      "contem": "outback"
+     },
+     "time": "20:00",
+     "date": {
+      "data": "dow:sabado"
+     }
+    }
+   }
+  },
+  {
+   "id": "ag-04",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "marca dentista amanhã às 9h e me avisa 1h antes",
+   "esperado": {
+    "intent": "create_event",
+    "campos": {
+     "title": {
+      "contem": "dentista"
+     },
+     "date": {
+      "data": "amanha"
+     },
+     "time": "09:00",
+     "lead_minutes": 60
+    }
+   }
+  },
+  {
+   "id": "ag-05",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "o que eu tenho essa semana?",
+   "esperado": {
+    "intent": "list_agenda",
+    "campos": {
+     "range_start": {
+      "data": "hoje"
+     },
+     "range_end": {
+      "data": "fim_semana"
+     }
+    }
+   }
+  },
+  {
+   "id": "ag-06",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "o que tenho esse mês?",
+   "esperado": {
+    "intent": "list_agenda",
+    "campos": {
+     "range_start": {
+      "data_em": [
+       "hoje",
+       "inicio_mes"
+      ]
+     },
+     "range_end": {
+      "data": "fim_mes"
+     }
+    }
+   }
+  },
+  {
+   "id": "ag-07",
+   "grupo": "agenda",
+   "origem": "sintetico",
+   "mensagem": "o que tenho amanhã?",
+   "esperado": {
+    "intent": "list_agenda",
+    "campos": {
+     "range_start": {
+      "data": "amanha"
+     },
+     "range_end": {
+      "data": "amanha"
+     }
+    }
+   }
+  },
+  {
+   "id": "ag-08",
+   "grupo": "agenda",
+   "origem": "sintetico",
+   "mensagem": "cancela a reunião de sexta",
+   "esperado": {
+    "intent": "manage_event",
+    "campos": {
+     "ev_action": "cancel"
+    }
+   }
+  },
+  {
+   "id": "ag-09",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "dentista remarcou pra próxima quarta às 14h",
+   "tags": [
+    "correcao_texto"
+   ],
+   "esperado": {
+    "intent": "manage_event",
+    "campos": {
+     "ev_action": "move",
+     "title": {
+      "contem": "dentista"
+     },
+     "date": {
+      "data": "dow:quarta"
+     },
+     "time": "14:00"
+    }
+   }
+  },
+  {
+   "id": "ag-10",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "na verdade o dentista é às 10",
+   "contexto": [
+    {
+     "r": "user",
+     "t": "marca dentista amanhã às 9h"
+    },
+    {
+     "r": "model",
+     "t": "Marquei o dentista amanhã às 9h. [agendado: AMANHA 09:00]"
+    }
+   ],
+   "tags": [
+    "correcao_texto"
+   ],
+   "esperado": {
+    "intent": "manage_event",
+    "campos": {
+     "ev_action": "move",
+     "title": {
+      "contem": "dentista"
+     },
+     "time": "10:00"
+    }
+   }
+  },
+  {
+   "id": "ag-11",
+   "grupo": "agenda",
+   "origem": "banco",
+   "mensagem": "jantar com a Maria Clara sábado às 20h30 no Outback",
+   "esperado": {
+    "intent": "create_event",
+    "campos": {
+     "title": {
+      "contem": "jantar"
+     },
+     "date": {
+      "data": "dow:sabado"
+     },
+     "time": "20:30",
+     "location": {
+      "contem": "outback"
+     }
+    }
+   }
+  },
+  {
+   "id": "ag-12",
+   "grupo": "agenda",
+   "origem": "sintetico",
+   "mensagem": "reunião com a equipe toda segunda às 9h",
+   "esperado": {
+    "intent": "create_event",
+    "campos": {
+     "time": "09:00",
+     "date": {
+      "data": "dow:segunda"
+     },
+     "repeat_freq": {
+      "naonulo": true
+     }
+    }
+   }
+  },
+  {
+   "id": "ag-13",
+   "grupo": "agenda",
+   "origem": "banco",
+   "mensagem": "me lembra de ligar pro contador amanhã às 15h",
+   "esperado": {
+    "intent": "create_reminder",
+    "campos": {
+     "title": {
+      "contem": "contador"
+     },
+     "date": {
+      "data": "amanha"
+     },
+     "time": "15:00"
+    }
+   }
+  },
+  {
+   "id": "ag-14",
+   "grupo": "agenda",
+   "origem": "sintetico",
+   "mensagem": "me lembra de tomar água daqui a 2 horas",
+   "esperado": {
+    "intent": "create_reminder",
+    "campos": {
+     "time": {
+      "hora_rel_min": 120,
+      "tol": 20
+     }
+    }
+   }
+  },
+  {
+   "id": "ag-15",
+   "grupo": "agenda",
+   "origem": "sintetico",
+   "mensagem": "me lembra amanhã de manhã de pagar o boleto",
+   "obs": "Regra de ouro: sem hora exata, perguntar.",
+   "esperado": {
+    "intent": "clarify"
+   }
+  },
+  {
+   "id": "ag-16",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "preciso entregar uma garrafa pra Maria Luisa na igreja",
+   "tags": [
+    "entidade_nova"
+   ],
+   "obs": "Entidade nova (pessoa + lugar): o esperado e a tarefa e depois UMA oferta de salvar Maria Luisa e a igreja.",
+   "esperado": {
+    "intent": "create_task",
+    "campos": {
+     "title": {
+      "contem": "garrafa"
+     }
+    },
+    "resposta_contem_algum": [
+     "contatos",
+     "salvar",
+     "adicionar",
+     "guardar"
+    ]
+   }
+  },
+  {
+   "id": "ag-17",
+   "grupo": "agenda",
+   "origem": "banco",
+   "mensagem": "me lembra de pegar a tesoura e o arranjo de flores pra igreja amanhã às 8h",
+   "esperado": {
+    "intent": "create_reminder",
+    "campos": {
+     "date": {
+      "data": "amanha"
+     },
+     "time": "08:00"
+    }
+   }
+  },
+  {
+   "id": "ag-18",
+   "grupo": "agenda",
+   "origem": "banco",
+   "mensagem": "me lembra de mandar mensagem pro Anthony hoje às 23h",
+   "esperado": {
+    "intent": "create_reminder",
+    "campos": {
+     "title": {
+      "contem": "anthony"
+     },
+     "time": "23:00",
+     "date": {
+      "data": "hoje_ou_amanha"
+     }
+    }
+   }
+  },
+  {
+   "id": "ag-19",
+   "grupo": "agenda",
+   "origem": "banco",
+   "mensagem": "corte de cabelo sexta às 9h20",
+   "esperado": {
+    "intent": "create_event",
+    "campos": {
+     "title": {
+      "contem": "cabelo"
+     },
+     "date": {
+      "data": "dow:sexta"
+     },
+     "time": "09:20"
+    }
+   }
+  },
+  {
+   "id": "ag-20",
+   "grupo": "agenda",
+   "origem": "historico",
+   "mensagem": "https://maps.app.goo.gl/jCR6z2FW6QANoBm56",
+   "contexto": [
+    {
+     "r": "user",
+     "t": "Tenho uma consulta dia 09/11 às 17:40 no gastro, vou te confirmar o local."
+    },
+    {
+     "r": "model",
+     "t": "Agendado no seu Google Calendar: \"Consulta no gastro\" - seg 09/11 às 17:40.\nQuer que eu te lembre antes? [agendado: 2026-11-09 17:40]"
+    }
+   ],
+   "tags": [
+    "correcao_texto"
+   ],
+   "obs": "Link do local logo depois de criar o evento: esperado ligar ao evento recente (hoje diz que nao consegue).",
+   "esperado": {
+    "intent": [
+     "chat",
+     "clarify",
+     "contact_manage"
+    ],
+    "resposta_nao_contem": [
+     "não consigo anexar",
+     "nao consigo anexar"
+    ]
+   }
+  },
+  {
+   "id": "fin-01",
+   "grupo": "financas",
+   "origem": "spec",
+   "mensagem": "gastei 120 na farmácia e 80 no mercado",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "add",
+     "fin_items": {
+      "itens_valores": [
+       120,
+       80
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "fin-02",
+   "grupo": "financas",
+   "origem": "sintetico",
+   "mensagem": "paguei 45 de uber",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "add",
+     "fin_kind": "expense",
+     "amount": 45
+    }
+   }
+  },
+  {
+   "id": "fin-03",
+   "grupo": "financas",
+   "origem": "sintetico",
+   "mensagem": "recebi 3500 de salário",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "add",
+     "fin_kind": "income",
+     "amount": 3500
+    }
+   }
+  },
+  {
+   "id": "fin-04",
+   "grupo": "financas",
+   "origem": "spec",
+   "mensagem": "quanto gastei esse mês?",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "summary",
+     "period": "current"
+    }
+   }
+  },
+  {
+   "id": "fin-05",
+   "grupo": "financas",
+   "origem": "sintetico",
+   "mensagem": "quanto gastei hoje?",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "summary",
+     "period": "today"
+    }
+   }
+  },
+  {
+   "id": "fin-06",
+   "grupo": "financas",
+   "origem": "spec",
+   "mensagem": "quanto falta pra fechar a fatura?",
+   "tags": [
+    "resposta_dados"
+   ],
+   "esperado": {
+    "intent": "finance"
+   }
+  },
+  {
+   "id": "fin-07",
+   "grupo": "financas",
+   "origem": "banco",
+   "mensagem": "academia 120 todo dia 10",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "amount": 120,
+     "recurring_day": 10
+    }
+   }
+  },
+  {
+   "id": "fin-08",
+   "grupo": "financas",
+   "origem": "sintetico",
+   "mensagem": "comprei um tênis de 300 em 3x no cartão",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "installments": 3,
+     "amount": {
+      "em": [
+       300,
+       100
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "fin-09",
+   "grupo": "financas",
+   "origem": "sintetico",
+   "mensagem": "quanto o João me deve?",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "owed",
+     "person": {
+      "contem": "joao"
+     }
+    }
+   }
+  },
+  {
+   "id": "fin-10",
+   "grupo": "financas",
+   "origem": "sintetico",
+   "mensagem": "corrige o último gasto pra 50",
+   "tags": [
+    "correcao_texto"
+   ],
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "correct",
+     "amount": 50
+    }
+   }
+  },
+  {
+   "id": "fin-11",
+   "grupo": "financas",
+   "origem": "sintetico",
+   "mensagem": "apaga o gasto do uber",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "remove"
+    }
+   }
+  },
+  {
+   "id": "fin-12",
+   "grupo": "financas",
+   "origem": "sintetico",
+   "mensagem": "define meu orçamento de mercado em 800",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": "budget_set",
+     "budget_amount": 800,
+     "category": {
+      "contem": "mercado"
+     }
+    }
+   }
+  },
+  {
+   "id": "fin-13",
+   "grupo": "financas",
+   "origem": "banco",
+   "mensagem": "paguei a conta da Claro 310,26",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "fin_action": [
+      "add",
+      "pay"
+     ],
+     "amount": 310.26,
+     "title": {
+      "contem": "claro"
+     }
+    }
+   }
+  },
+  {
+   "id": "li-01",
+   "grupo": "listas",
+   "origem": "sintetico",
+   "mensagem": "preciso comprar leite, pão e ovos",
+   "esperado": {
+    "intent": "list_manage",
+    "campos": {
+     "list_action": "add",
+     "list_items": {
+      "lista_contem": [
+       "leite",
+       "pao",
+       "ovos"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "li-02",
+   "grupo": "listas",
+   "origem": "sintetico",
+   "mensagem": "tira o leite da lista",
+   "esperado": {
+    "intent": "list_manage",
+    "campos": {
+     "list_action": "remove",
+     "list_items": {
+      "lista_contem": [
+       "leite"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "li-03",
+   "grupo": "listas",
+   "origem": "sintetico",
+   "mensagem": "o que tem na lista de mercado?",
+   "esperado": {
+    "intent": "list_manage",
+    "campos": {
+     "list_action": "show",
+     "list_name": {
+      "contem": "mercado"
+     }
+    }
+   }
+  },
+  {
+   "id": "li-04",
+   "grupo": "listas",
+   "origem": "sintetico",
+   "mensagem": "cria uma lista de mala de viagem com camiseta, escova de dente e carregador",
+   "esperado": {
+    "intent": "list_manage",
+    "campos": {
+     "list_action": "create",
+     "list_items": {
+      "lista_tamanho": 3
+     }
+    }
+   }
+  },
+  {
+   "id": "li-05",
+   "grupo": "listas",
+   "origem": "sintetico",
+   "mensagem": "pode riscar o pão",
+   "contexto": [
+    {
+     "r": "user",
+     "t": "preciso comprar leite, pão e ovos"
+    },
+    {
+     "r": "model",
+     "t": "Adicionei leite, pão e ovos na lista de mercado."
+    }
+   ],
+   "esperado": {
+    "intent": "list_manage",
+    "campos": {
+     "list_action": "check",
+     "list_items": {
+      "lista_contem": [
+       "pao"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "ta-01",
+   "grupo": "tarefas",
+   "origem": "banco",
+   "mensagem": "preciso ligar pro contador",
+   "esperado": {
+    "intent": "create_task",
+    "campos": {
+     "title": {
+      "contem": "contador"
+     }
+    }
+   }
+  },
+  {
+   "id": "ta-02",
+   "grupo": "tarefas",
+   "origem": "sintetico",
+   "mensagem": "o que tenho de pendências?",
+   "esperado": {
+    "intent": "list_tasks"
+   }
+  },
+  {
+   "id": "ta-03",
+   "grupo": "tarefas",
+   "origem": "sintetico",
+   "mensagem": "já paguei o IPTU, pode riscar",
+   "esperado": {
+    "intent": "complete_task",
+    "campos": {
+     "title": {
+      "contem": "iptu"
+     }
+    }
+   }
+  },
+  {
+   "id": "ta-04",
+   "grupo": "tarefas",
+   "origem": "banco",
+   "mensagem": "preciso pegar e guardar o guarda-chuva lá fora",
+   "esperado": {
+    "intent": "create_task",
+    "campos": {
+     "title": {
+      "contem": "guarda"
+     }
+    }
+   }
+  },
+  {
+   "id": "no-01",
+   "grupo": "notas",
+   "origem": "sintetico",
+   "mensagem": "anota: a senha do wifi da casa da minha mãe é abacate123",
+   "esperado": {
+    "intent": "note_manage",
+    "campos": {
+     "note_action": "save"
+    }
+   }
+  },
+  {
+   "id": "no-02",
+   "grupo": "notas",
+   "origem": "sintetico",
+   "mensagem": "o que eu anotei sobre o wifi?",
+   "esperado": {
+    "intent": "note_manage",
+    "campos": {
+     "note_action": "search"
+    }
+   }
+  },
+  {
+   "id": "pr-01",
+   "grupo": "projetos",
+   "origem": "sintetico",
+   "mensagem": "novo projeto: reforma do banheiro, prazo 30/11, tarefas: orçar azulejo, chamar pedreiro, escolher louça",
+   "esperado": {
+    "intent": "project_manage",
+    "campos": {
+     "project_action": "create",
+     "project_name": {
+      "contem": "reforma"
+     },
+     "project_tasks": {
+      "lista_tamanho": 3
+     }
+    }
+   }
+  },
+  {
+   "id": "pr-02",
+   "grupo": "projetos",
+   "origem": "historico",
+   "mensagem": "como estão meus projetos?",
+   "esperado": {
+    "intent": "project_manage",
+    "campos": {
+     "project_action": [
+      "show",
+      "list"
+     ]
+    }
+   }
+  },
+  {
+   "id": "pr-03",
+   "grupo": "projetos",
+   "origem": "sintetico",
+   "mensagem": "adiciona comprar tinta ao projeto reforma do banheiro",
+   "esperado": {
+    "intent": "project_manage",
+    "campos": {
+     "project_action": "add_tasks",
+     "project_tasks": {
+      "lista_contem": [
+       "tinta"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "pr-04",
+   "grupo": "projetos",
+   "origem": "sintetico",
+   "mensagem": "marca como feita a tarefa orçar azulejo do projeto reforma",
+   "esperado": {
+    "intent": "project_manage",
+    "campos": {
+     "project_action": "complete_task"
+    }
+   }
+  },
+  {
+   "id": "su-01",
+   "grupo": "remedios",
+   "origem": "sintetico",
+   "mensagem": "tomo vitamina D todo dia às 8h, tenho 30 na cartela",
+   "esperado": {
+    "intent": "create_supply",
+    "campos": {
+     "item": {
+      "contem": "vitamina"
+     },
+     "take_time": "08:00",
+     "units_total": 30
+    }
+   }
+  },
+  {
+   "id": "su-02",
+   "grupo": "remedios",
+   "origem": "sintetico",
+   "mensagem": "me lembra de tomar losartana todo dia às 21h",
+   "esperado": {
+    "intent": "supply_schedule",
+    "campos": {
+     "item": {
+      "contem": "losartana"
+     },
+     "take_time": "21:00",
+     "item_kind": "remedio"
+    }
+   }
+  },
+  {
+   "id": "su-03",
+   "grupo": "remedios",
+   "origem": "sintetico",
+   "mensagem": "tomei a vitamina",
+   "esperado": {
+    "intent": "supply_taken",
+    "campos": {
+     "item": {
+      "contem": "vitamina"
+     }
+    }
+   }
+  },
+  {
+   "id": "su-04",
+   "grupo": "remedios",
+   "origem": "historico",
+   "mensagem": "Faltam só 3 na verdade",
+   "contexto": [
+    {
+     "r": "user",
+     "t": "quanto falta do anticoncepcional?"
+    },
+    {
+     "r": "model",
+     "t": "Seu anticoncepcional está acabando: restam 4 comprimidos (acaba em 09/11). Já comprou mais?"
+    }
+   ],
+   "esperado": {
+    "intent": "supply_adjust",
+    "campos": {
+     "item": {
+      "contem": "anticoncepcional"
+     },
+     "units_left": 3
+    }
+   }
+  },
+  {
+   "id": "su-05",
+   "grupo": "remedios",
+   "origem": "historico",
+   "mensagem": "Nao faltam 11, faltam 6",
+   "contexto": [
+    {
+     "r": "user",
+     "t": "quanto falta do anticoncepcional?"
+    },
+    {
+     "r": "model",
+     "t": "Seu anticoncepcional está acabando: restam 4 comprimidos (acaba em 09/11). Já comprou mais?"
+    }
+   ],
+   "esperado": {
+    "intent": "supply_adjust",
+    "campos": {
+     "item": {
+      "contem": "anticoncepcional"
+     },
+     "units_left": 6
+    }
+   }
+  },
+  {
+   "id": "su-06",
+   "grupo": "remedios",
+   "origem": "sintetico",
+   "mensagem": "comprei mais uma cartela de anticoncepcional",
+   "esperado": {
+    "intent": "supply_bought",
+    "campos": {
+     "item": {
+      "contem": "anticoncepcional"
+     }
+    }
+   }
+  },
+  {
+   "id": "su-07",
+   "grupo": "remedios",
+   "origem": "sintetico",
+   "mensagem": "para de me lembrar da losartana",
+   "esperado": {
+    "intent": "supply_schedule",
+    "campos": {
+     "item": {
+      "contem": "losartana"
+     },
+     "stop_reminder": true
+    }
+   }
+  },
+  {
+   "id": "su-08",
+   "grupo": "remedios",
+   "origem": "historico",
+   "mensagem": "feito compromisso",
+   "obs": "Mensagem real sem contexto claro (resposta a algum aviso).",
+   "esperado": {
+    "intent": [
+     "chat",
+     "clarify"
+    ]
+   }
+  },
+  {
+   "id": "co-01",
+   "grupo": "contatos",
+   "origem": "sintetico",
+   "mensagem": "salva o e-mail da Ana: ana@exemplo.com",
+   "esperado": {
+    "intent": "contact_manage",
+    "campos": {
+     "contact_action": "save",
+     "contact_name": {
+      "contem": "ana"
+     },
+     "contact_email": "ana@exemplo.com"
+    }
+   }
+  },
+  {
+   "id": "co-02",
+   "grupo": "contatos",
+   "origem": "sintetico",
+   "mensagem": "cria o grupo família com Maria Clara e Ana",
+   "esperado": {
+    "intent": "contact_manage",
+    "campos": {
+     "contact_action": "group_save",
+     "group_name": {
+      "contem": "familia"
+     }
+    }
+   }
+  },
+  {
+   "id": "co-03",
+   "grupo": "contatos",
+   "origem": "sintetico",
+   "mensagem": "salva o endereço de casa: Rua das Flores 123, Águas Claras",
+   "esperado": {
+    "intent": "contact_manage",
+    "campos": {
+     "contact_action": "place_save"
+    }
+   }
+  },
+  {
+   "id": "co-04",
+   "grupo": "contatos",
+   "origem": "banco",
+   "mensagem": "marca a festa da igreja na sexta com a família",
+   "obs": "Sem hora: perguntar a hora (create_event com reply perguntando tambem vale). Criterio ajustado apos o 1o baseline.",
+   "esperado": {
+    "intent": [
+     "clarify",
+     "create_event"
+    ],
+    "resposta_contem_algum": [
+     "que horas",
+     "qual horario",
+     "que hora"
+    ]
+   }
+  },
+  {
+   "id": "co-05",
+   "grupo": "contatos",
+   "origem": "sintetico",
+   "mensagem": "marca reunião com a Ana amanhã às 10h e convida ela",
+   "esperado": {
+    "intent": "create_event",
+    "campos": {
+     "time": "10:00",
+     "date": {
+      "data": "amanha"
+     },
+     "invitees": {
+      "lista_contem": [
+       "ana"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "ch-01",
+   "grupo": "conversa",
+   "origem": "spec",
+   "mensagem": "me indica um restaurante",
+   "tags": [
+    "recusa"
+   ],
+   "obs": "Esperado: avisar com franqueza que nao indica restaurante (ou pesquisa com aviso de custo).",
+   "esperado": {
+    "intent": [
+     "chat",
+     "research"
+    ],
+    "resposta_nao_promete": true
+   }
+  },
+  {
+   "id": "ch-02",
+   "grupo": "conversa",
+   "origem": "historico",
+   "mensagem": "oi",
+   "esperado": {
+    "intent": "chat"
+   }
+  },
+  {
+   "id": "ch-03",
+   "grupo": "conversa",
+   "origem": "spec",
+   "mensagem": "por que o aviso veio às 18:30?",
+   "tags": [
+    "resposta_dados"
+   ],
+   "esperado": {
+    "intent": [
+     "chat",
+     "misc_query"
+    ]
+   }
+  },
+  {
+   "id": "ch-04",
+   "grupo": "conversa",
+   "origem": "sintetico",
+   "mensagem": "quanto está o dólar hoje?",
+   "esperado": {
+    "intent": "research"
+   }
+  },
+  {
+   "id": "ch-05",
+   "grupo": "conversa",
+   "origem": "sintetico",
+   "mensagem": "quanto gastei de IA esse mês?",
+   "esperado": {
+    "intent": "ai_cost"
+   }
+  },
+  {
+   "id": "ch-06",
+   "grupo": "conversa",
+   "origem": "historico",
+   "mensagem": "importe minha agenda",
+   "contexto": [
+    {
+     "r": "user",
+     "t": "oi"
+    },
+    {
+     "r": "model",
+     "t": "Oi! Como posso te ajudar?"
+    }
+   ],
+   "esperado": {
+    "intent": [
+     "agenda_import",
+     "chat"
+    ]
+   }
+  },
+  {
+   "id": "pf-01",
+   "grupo": "preferencias",
+   "origem": "sintetico",
+   "mensagem": "para de usar emoji",
+   "esperado": {
+    "intent": "set_preference",
+    "campos": {
+     "pref_no_emoji": true
+    }
+   }
+  },
+  {
+   "id": "pf-02",
+   "grupo": "preferencias",
+   "origem": "sintetico",
+   "mensagem": "me chama de Dri",
+   "esperado": {
+    "intent": "set_preference",
+    "campos": {
+     "pref_nickname": {
+      "contem": "dri"
+     }
+    }
+   }
+  },
+  {
+   "id": "pf-03",
+   "grupo": "preferencias",
+   "origem": "sintetico",
+   "mensagem": "manda o resumo da manhã às 7h",
+   "esperado": {
+    "intent": "set_preference",
+    "campos": {
+     "pref_summary_time": "07:00"
+    }
+   }
+  },
+  {
+   "id": "pf-04",
+   "grupo": "preferencias",
+   "origem": "sintetico",
+   "mensagem": "me avisa sempre 30 minutos antes dos compromissos",
+   "esperado": {
+    "intent": "set_preference",
+    "campos": {
+     "pref_lead_minutes": 30
+    }
+   }
+  },
+  {
+   "id": "mu-01",
+   "grupo": "multiplos",
+   "origem": "spec",
+   "mensagem": "amanhã tenho dentista às 9h, preciso comprar leite e paguei 50 de uber",
+   "tags": [
+    "multiplos"
+   ],
+   "esperado": {
+    "acoes": [
+     {
+      "intent": "create_event",
+      "palavras": [
+       "dentista"
+      ]
+     },
+     {
+      "intent": [
+       "list_manage",
+       "create_task"
+      ],
+      "palavras": [
+       "leite"
+      ]
+     },
+     {
+      "intent": "finance",
+      "palavras": [
+       "uber"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "mu-02",
+   "grupo": "multiplos",
+   "origem": "spec",
+   "mensagem": "me lembra de ligar pro contador amanhã às 10h, anota na lista de mercado ovos e café e gastei 35 na padaria hoje",
+   "tags": [
+    "multiplos"
+   ],
+   "esperado": {
+    "acoes": [
+     {
+      "intent": "create_reminder",
+      "palavras": [
+       "contador"
+      ]
+     },
+     {
+      "intent": "list_manage",
+      "palavras": [
+       "ovos",
+       "cafe"
+      ]
+     },
+     {
+      "intent": "finance",
+      "palavras": [
+       "padaria"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "mu-03",
+   "grupo": "multiplos",
+   "origem": "sintetico",
+   "mensagem": "marca reunião com o Pedro quinta às 15h e me lembra de mandar o relatório hoje às 23h",
+   "tags": [
+    "multiplos"
+   ],
+   "esperado": {
+    "acoes": [
+     {
+      "intent": "create_event",
+      "palavras": [
+       "pedro",
+       "reuniao"
+      ]
+     },
+     {
+      "intent": "create_reminder",
+      "palavras": [
+       "relatorio"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "mu-04",
+   "grupo": "multiplos",
+   "origem": "sintetico",
+   "mensagem": "tomei a vitamina e gastei 20 no almoço",
+   "tags": [
+    "multiplos"
+   ],
+   "esperado": {
+    "acoes": [
+     {
+      "intent": "supply_taken",
+      "palavras": [
+       "vitamina"
+      ]
+     },
+     {
+      "intent": "finance",
+      "palavras": [
+       "almoco"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "mu-05",
+   "grupo": "multiplos",
+   "origem": "spec",
+   "mensagem": "preciso ligar pro contador, comprar pão e pagar o IPTU até sexta",
+   "tags": [
+    "multiplos"
+   ],
+   "esperado": {
+    "acoes": [
+     {
+      "intent": "create_task",
+      "palavras": [
+       "contador"
+      ]
+     },
+     {
+      "intent": [
+       "list_manage",
+       "create_task"
+      ],
+      "palavras": [
+       "pao"
+      ]
+     },
+     {
+      "intent": "create_task",
+      "palavras": [
+       "iptu"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "nm-01",
+   "grupo": "midia",
+   "origem": "historico",
+   "mensagem": "[foto de agenda de papel]",
+   "medir": false,
+   "motivo_nao_medido": "Foto precisa de file_id real do Telegram e dispara a importacao (rascunho + eventos/tarefas no Google real)."
+  },
+  {
+   "id": "nm-02",
+   "grupo": "midia",
+   "origem": "historico",
+   "mensagem": "[audio de voz: corte de cabelo]",
+   "medir": false,
+   "motivo_nao_medido": "Audio precisa de file_id real do Telegram e a transcricao usa o arquivo; o fluxo seguinte cria evento."
+  },
+  {
+   "id": "nm-03",
+   "grupo": "comando",
+   "origem": "spec",
+   "mensagem": "/config",
+   "medir": false,
+   "motivo_nao_medido": "A falha era no envio (entidades Markdown com underscore em America/Sao_Paulo); o chat de teste nao existe no Telegram, entao o envio sempre falha e nao da para verificar o parse."
+  },
+  {
+   "id": "nm-04",
+   "grupo": "agenda",
+   "origem": "spec",
+   "mensagem": "Criacao efetiva do evento no Google e 'Desfazer tudo'",
+   "medir": false,
+   "motivo_nao_medido": "Exige conta Google conectada; o usuario de teste nao tem (de proposito) e nao se cria nada no Google real do Adrian."
+  },
+  {
+   "id": "me-01",
+   "grupo": "memoria",
+   "origem": "spec",
+   "mensagem": "minha sogra é a Dona Marta",
+   "tags": [
+    "memoria"
+   ],
+   "obs": "Fato duradouro (relacao). Deve vir em mem_facts; intent=chat com reply vazio.",
+   "esperado": {
+    "intent": [
+     "chat",
+     "clarify"
+    ],
+    "campos": {
+     "mem_facts": {
+      "lista_contem": [
+       "marta"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "me-02",
+   "grupo": "memoria",
+   "origem": "spec",
+   "mensagem": "preciso entregar uma garrafa pra Maria Luisa na igreja",
+   "tags": [
+    "oferta_salvar"
+   ],
+   "obs": "Pessoa e lugar novos: new_person e new_place; nao e fato duradouro.",
+   "esperado": {
+    "intent": [
+     "create_task",
+     "create_reminder",
+     "clarify"
+    ],
+    "campos": {
+     "new_person": {
+      "contem": "maria luisa"
+     },
+     "new_place": {
+      "contem": "igreja"
+     },
+     "mem_facts": {
+      "nulo": true
+     }
+    }
+   }
+  },
+  {
+   "id": "me-03",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "me lembra de tomar água às 15h",
+   "tags": [
+    "memoria"
+   ],
+   "obs": "Nada novo para memoria nem para oferta.",
+   "esperado": {
+    "intent": "create_reminder",
+    "campos": {
+     "mem_facts": {
+      "nulo": true
+     },
+     "new_person": {
+      "nulo": true
+     },
+     "new_place": {
+      "nulo": true
+     }
+    }
+   }
+  },
+  {
+   "id": "me-04",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "gastei 30 no mercado",
+   "tags": [
+    "memoria"
+   ],
+   "obs": "Gasto pontual nao e fato duradouro.",
+   "esperado": {
+    "intent": "finance",
+    "campos": {
+     "mem_facts": {
+      "nulo": true
+     },
+     "new_person": {
+      "nulo": true
+     },
+     "new_place": {
+      "nulo": true
+     }
+    }
+   }
+  },
+  {
+   "id": "me-05",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "esquece isso",
+   "contexto": [
+    {
+     "r": "user",
+     "t": "minha sogra é a Dona Marta"
+    },
+    {
+     "r": "model",
+     "t": "Anotei: Dona Marta é sua sogra"
+    }
+   ],
+   "tags": [
+    "memoria"
+   ],
+   "esperado": {
+    "intent": "memory_manage",
+    "campos": {
+     "mem_action": "forget"
+    }
+   }
+  },
+  {
+   "id": "me-06",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "para de perguntar se salvo",
+   "tags": [
+    "interruptor"
+   ],
+   "esperado": {
+    "intent": "memory_manage",
+    "campos": {
+     "mem_action": "switch_off",
+     "mem_ref": {
+      "contem_algum": [
+       "oferta",
+       "salv"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "me-07",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "sem sugestões",
+   "tags": [
+    "interruptor"
+   ],
+   "esperado": {
+    "intent": "memory_manage",
+    "campos": {
+     "mem_action": "switch_off",
+     "mem_ref": {
+      "contem": "sugest"
+     }
+    }
+   }
+  },
+  {
+   "id": "me-08",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "o que você sabe de mim?",
+   "tags": [
+    "memoria"
+   ],
+   "esperado": {
+    "intent": "memory_manage",
+    "campos": {
+     "mem_action": "list"
+    }
+   }
+  },
+  {
+   "id": "me-09",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "sim, o e-mail dela é maria@exemplo.com e a igreja fica na Rua das Flores 100",
+   "estado": {
+    "kind": "offer",
+    "pessoa": "maria luisa",
+    "lugar": "igreja",
+    "ts": "NOW"
+   },
+   "tags": [
+    "oferta_salvar"
+   ],
+   "obs": "Exige o estado 'oferta pendente' no Redis (run.py semeia pelo campo estado).",
+   "esperado": {
+    "intent": "memory_manage",
+    "campos": {
+     "mem_action": "offer_yes",
+     "contact_email": {
+      "contem": "maria@exemplo.com"
+     },
+     "location": {
+      "contem": "flores"
+     }
+    }
+   }
+  },
+  {
+   "id": "me-10",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "não, deixa",
+   "estado": {
+    "kind": "offer",
+    "pessoa": "maria luisa",
+    "lugar": "igreja",
+    "ts": "NOW"
+   },
+   "tags": [
+    "oferta_salvar"
+   ],
+   "esperado": {
+    "intent": "memory_manage",
+    "campos": {
+     "mem_action": "offer_no"
+    }
+   }
+  },
+  {
+   "id": "me-11",
+   "grupo": "memoria",
+   "origem": "sintetico",
+   "mensagem": "não consigo comer glúten, tenho doença celíaca",
+   "tags": [
+    "memoria"
+   ],
+   "obs": "Dado sensivel tambem e gravado.",
+   "esperado": {
+    "intent": [
+     "chat",
+     "clarify"
+    ],
+    "campos": {
+     "mem_facts": {
+      "lista_contem": [
+       "gluten"
+      ]
+     }
+    }
+   }
+  }
+ ]
+}
