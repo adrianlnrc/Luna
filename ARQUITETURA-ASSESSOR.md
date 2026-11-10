@@ -175,3 +175,77 @@ A1, C1 e V1 não dependem do nó AI Agent nem de tempo de execução extra no n8
    `user_id` continua absoluto?
 4. Isso fica pessoal, ou é o primeiro passo para um SaaS? (Muda multi-tenant, credenciais Google por usuário e o
    molde de agenda por pessoa.)
+
+## 8. Arquitetura alternativa: agente em código (Python), n8n na periferia
+
+A proposta das seções 2 a 6 mantém o n8n no centro e pendura o assessor ao lado. Esta alternativa inverte: o
+centro passa a ser um serviço Python com laço de agente; o n8n fica só para automações periféricas.
+
+```mermaid
+flowchart TD
+  TG[Telegram webhook] --> API[Serviço Python\nFastAPI no Easypanel]
+  API --> Q[(Redis: fila, estado, dedupe)]
+  Q --> AG[Laço do agente\nLLM com tool calling, máx N passos]
+  AG --> POL{Política em código\nleitura / cria / altera-apaga / terceiros}
+  POL -->|leitura e criação| TOOLS[~12 ferramentas por domínio]
+  POL -->|altera, apaga, terceiros| PEND[(pending_actions\n+ botões Confirmar)]
+  PEND --> TOOLS
+  TOOLS --> PG[(Postgres: as 248 funções f_* atuais)]
+  TOOLS --> GC[Google Calendar / Tasks\nOAuth por usuário]
+  TOOLS --> WEB[Busca web]
+  AG --> LEDGER[(assessor_runs: custo e resultado por execução)]
+  CRON[Agendador: n8n ou cron] --> VIG[f_insights + resumos] --> API
+```
+
+### Como funciona
+- **Sem classificador separado.** O modelo recebe ~12 ferramentas por domínio (`agenda`, `financas`, `lembretes`,
+  `estoque`, `documentos`, `listas_notas`, `projetos`, `contatos_lugares`, `memoria`, `retrato`, `pesquisa_web`,
+  `preferencias`), cada uma com schema estrito. Pedido simples = 1 chamada de ferramenta; pedido que cruza áreas =
+  várias, no mesmo laço. Não existe mais a fronteira "intent direta × assessor".
+- **A lógica de negócio não é reescrita.** As ferramentas são invólucros finos das funções SQL atuais (`f_fin`,
+  `f_callback`, `f_summary_data`, `f_docs`, ...). O que é reescrito é a cola: os 55 nós Code (montagem de pedido,
+  formatação de resposta) e o roteamento dos 194 nós.
+- **Autonomia controlada vira código, não prompt.** Cada ferramenta declara sua classe. Alterar, apagar e falar com
+  terceiros nunca executam direto: gravam em `pending_actions` e mandam os botões. O modelo não consegue pular isso.
+- **Iniciativa:** mesmo Vigia (`f_insights`) da seção 2, disparado por cron; opcionalmente uma "revisão da semana"
+  feita pelo agente (domingo à noite), com custo medido.
+- **Testes:** `pytest` para ferramentas e política; os 91 casos de `tests/natural/casos.json` viram avaliação de
+  regressão (mensagem → ferramenta e argumentos esperados), rodável com modelo real ou gravado.
+
+### Comparação
+
+| Critério | Atual (n8n, roteador fixo) | Nova (agente em código) |
+|---|---|---|
+| Cruzar áreas | Não faz; cada intent é um ramo isolado | Nativo: várias ferramentas no mesmo laço |
+| Iniciativa | Resumos fixos; sugestões desligadas por tempo de execução | Vigia em SQL + revisão semanal pelo agente, sem limite de execução do n8n |
+| Pedidos abertos / busca | Sub-workflow à parte, uma chamada, sem encadear | Busca é mais uma ferramenta; encadeia com agenda e finanças |
+| Custo por mensagem simples | ~R$ 0,009 (prompt de ~57 KB toda vez) | ~R$ 0,005–0,007 (2 chamadas com ~4 mil tokens de prefixo, que entra em cache) |
+| Custo por pergunta cruzada | Não disponível | ~R$ 0,02 (sem web), ~R$ 0,08 (com web) |
+| Previsibilidade | Alta: schema estrito de intent, fluxo fixo | Média-alta: schema estrito por ferramenta + política em código; a escolha da ferramenta é do modelo |
+| Adicionar função | Intent + patch + nós + regra no prompt (44 KB crescendo) | Uma função Python com schema; prompt não cresce |
+| Testabilidade | 161 testes offline só dos nós Code; roteamento só no n8n real | Tudo testável local (ferramentas, política, laço com modelo gravado) |
+| Depuração | Visual no n8n, bom para fluxo; ruim para JS dentro de JSON | Logs e traces por execução; sem editor visual |
+| Tempo de resposta | 1 chamada de IA + nós | 2+ chamadas; simples fica parecido, cruzada leva alguns segundos a mais |
+| Caminho para SaaS | Difícil: credencial e sub-workflow por pessoa, sem RLS | Natural: OAuth por usuário, multi-tenant, RLS |
+| Operação | Já está de pé; credenciais Google geridas pelo n8n | Você passa a manter deploy, fila, renovação de token Google, monitoramento |
+| Custo de construir | Zero (existe) | Alto: reescrever a cola de 30 intents e migrar 2 usuários ativos |
+| Risco | Baixo hoje; cresce com o prompt e a cadeia de ~30 patches | Regressão na migração; modelo escolher ferramenta errada (mitigado pela avaliação com os 91 casos) |
+
+### Onde cada uma ganha
+- **Atual ganha** em: já funciona, é previsível, não exige operação nova. É a melhor escolha se o Luna continuar
+  sendo uma secretária para duas pessoas.
+- **Nova ganha** em tudo o que define um assessor (cruzar áreas, encadear busca com dados pessoais, iniciativa
+  sem teto de execução) e em tudo o que define um SaaS (multi-usuário, testes, evolução sem inchar o prompt).
+
+### Caminho recomendado: migração por estrangulamento
+Não é preciso escolher entre as duas de uma vez:
+1. **Fases A1, C1 e V1 como estão** (SQL + n8n). Valem para qualquer arquitetura, porque moram no Postgres.
+2. **Fase B1 feita em Python, não no nó AI Agent do n8n.** O n8n chama o serviço por HTTP só na intent `assessor`.
+   O serviço nasce pequeno (laço, política, ferramentas de leitura, `propor_acao`) e já é a semente da arquitetura nova.
+3. **Mover domínios um a um** do n8n para ferramentas Python, começando pelos de leitura. A cada domínio movido, o
+   prompt do roteador encolhe.
+4. Quando o roteador só encaminhar, o webhook do Telegram passa a apontar para o serviço e o n8n fica com cron e
+   integrações.
+
+O passo 2 custa pouco e é reversível. Os passos 3 e 4 só se justificam se os números de `assessor_runs` mostrarem
+valor ou se a resposta sobre SaaS for "sim".
