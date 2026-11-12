@@ -28,6 +28,7 @@ class Nucleo:
     google: Google = field(default_factory=GoogleFalso)
     busca: Busca = field(default_factory=BuscaFalsa)
     relogio: Callable[[], datetime] = lambda: datetime.now(timezone.utc)
+    oauth: Any = None            # OAuthGoogle quando o Google esta configurado
     _modelos: dict = field(default_factory=dict)
     _modelos_ate: float = 0.0
 

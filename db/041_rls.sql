@@ -93,7 +93,8 @@ BEGIN
   IF EXISTS (SELECT 1 FROM user_channels WHERE canal = p_canal AND id_externo = p_id_externo) THEN
     RETURN jsonb_build_object('ok', false, 'motivo', 'ja_cadastrado');
   END IF;
-  IF p_canal <> 'telegram' OR p_id_externo !~ '^[0-9]+$' THEN
+  -- users.telegram_id ainda e obrigatorio (as funcoes de disparo enviam por ele): o id externo precisa ser numerico
+  IF p_id_externo !~ '^[0-9]{1,18}$' THEN
     RETURN jsonb_build_object('ok', false, 'motivo', 'canal');
   END IF;
   IF p_exige_convite THEN

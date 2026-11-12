@@ -108,8 +108,12 @@ async def botao_do_banco(nucleo: "Nucleo", usuario: Usuario, dado: str) -> list[
     if dado.startswith("mu:") and dado[3:].isdigit():
         res = await desfazer_lote(nucleo, usuario, int(dado[3:]))
         return [Saida(res.texto)]
+    # documentos, listas e projetos tem a propria funcao de botoes; nas migracoes do repositorio elas nao estao
+    # ligadas a f_callback, entao o servico roteia pelo prefixo (em producao o resultado e o mesmo)
+    fn = "f_docs_cb" if dado.startswith("dc") else "f_lists_cb" if dado.startswith("ls") else \
+         "f_projects_cb" if dado.startswith("pj") else "f_callback"
     async with nucleo.banco.usuario(usuario.id) as cx:
-        r = await cx.fn("f_callback", usuario.id, dado) or {}
+        r = await cx.fn(fn, usuario.id, dado) or {}
     if r.get("cals"):
         falhas = []
         for c in r["cals"]:
