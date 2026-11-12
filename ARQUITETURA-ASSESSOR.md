@@ -249,3 +249,10 @@ Não é preciso escolher entre as duas de uma vez:
 
 O passo 2 custa pouco e é reversível. Os passos 3 e 4 só se justificam se os números de `assessor_runs` mostrarem
 valor ou se a resposta sobre SaaS for "sim".
+
+## 9. Decisões do grilling
+
+| # | Pergunta | Decisão | Consequência |
+|---|---|---|---|
+| 1 | O que diferencia o assessor? | Cruzar áreas e tomar iniciativa com critério; busca como ferramenta | Seções 2 e 3 |
+| 2 | Pessoal ou SaaS? | **Protótipo de um SaaS** (12/11/2026) | A arquitetura da seção 8 (agente em código) é o destino; a migração por estrangulamento é o caminho. Multi-tenant, OAuth por usuário e RLS entram no desenho desde o primeiro serviço Python |
