@@ -141,7 +141,7 @@ async def _guardar_historico(nucleo: "Nucleo", uid: int, u: str, a: str) -> None
 async def executar(nucleo: "Nucleo", usuario: Usuario, texto: str, *, origem: str = "pergunta",
                    arquivo: Arquivo | None = None, fonte: str = "text",
                    imagens: list[tuple[bytes, str]] | None = None, canal: str = "telegram",
-                   forte: bool = False, usar_historico: bool = True) -> RespostaAgente:
+                   forte: bool = False, usar_historico: bool = True, so_propor: bool = False) -> RespostaAgente:
     cfg = nucleo.cfg
     t0 = time.monotonic()
     prazo = t0 + cfg.tempo_total_s
@@ -151,7 +151,7 @@ async def executar(nucleo: "Nucleo", usuario: Usuario, texto: str, *, origem: st
         run_id = await cx.fn("f_run_open", uid, origem, canal)
         cota = await cx.fn("f_quota_state", uid)
     ctx = Ctx(nucleo=nucleo, usuario=usuario, run_id=run_id, texto=texto, arquivo=arquivo, fonte=fonte,
-              est=EstadoExec(origem=origem, max_gravacoes=cfg.max_gravacoes))
+              est=EstadoExec(origem=origem, max_gravacoes=cfg.max_gravacoes, so_propor=so_propor))
 
     sem_franquia = origem == "pergunta" and not cota.get("tem_analise", True)
     sem_web = sem_franquia or (origem == "pergunta" and not cota.get("tem_web", True))

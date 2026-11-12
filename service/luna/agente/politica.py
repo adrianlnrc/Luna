@@ -24,6 +24,7 @@ class EstadoExec:
     propostas: int = 0
     max_gravacoes: int = 5
     confirmada: bool = False            # execucao de uma proposta que o usuario confirmou
+    so_propor: bool = False             # etapas 2 e 3: o servico so le; toda gravacao volta como proposta
 
 
 @dataclass
@@ -47,6 +48,10 @@ def decidir(acao: Acao, est: EstadoExec) -> Veredito:
         return Veredito(Decisao.RECUSAR, f"limite de {est.max_gravacoes} gravacoes por execucao")
 
     origem = est.origem if est.origem in ("vigia", "revisao") else "agente"
+
+    # etapas 2 e 3 (chamada vinda do n8n): nada grava aqui, nem a confirmacao do banco
+    if est.so_propor:
+        return Veredito(Decisao.PROPOR, "servico so le nesta etapa", "pedido" if not est.pedido_usado else "agente")
 
     # o banco ja pede confirmacao para esta acao: chamar e propor
     if acao.nativa:
