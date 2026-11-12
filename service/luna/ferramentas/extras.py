@@ -75,7 +75,8 @@ async def _pesquisa(ctx, acao: str, a: dict) -> Resultado:
         return Resultado(ok=False, erro=f"a pesquisa falhou ({type(e).__name__})")
     async with ctx.cx() as cx:
         taxa = await cx.valor("SELECT coalesce(usd_per_call, 0) FROM agente.ai_pricing WHERE model = 'tool:busca'")
-        await cx.fn("f_ai_log_run", ctx.uid, ctx.run_id, "pesquisa", "tool:busca", 0, 0, float(taxa or 0), False)
+        await cx.valor("SELECT agente.f_ai_log_run(%s, %s, 'pesquisa', 'tool:busca', 0, 0, %s::numeric, false)",
+                       ctx.uid, ctx.run_id, taxa or 0)
     if not achados:
         return Resultado(texto="Não achei fonte confiável para isso. Diga ao usuário que não encontrou fonte.", dados={"fontes": []})
     linhas = [f"[{i}] {x.titulo} — {x.url}\n{x.trecho}" for i, x in enumerate(achados, 1)]
