@@ -12,7 +12,7 @@ import re as _re
 _btns = [('Lembretes e agenda', 'mn:lemb'), ('Tarefas e listas', 'mn:tar'),
          ('Dinheiro', 'mn:din'), ('Remédios', 'mn:rem'),
          ('Projetos', 'mn:proj'), ('Documentos', 'mn:doc'),
-         ('Pessoas e memória', 'mn:pess'), ('Fotos, áudio e pesquisa', 'mn:foto'),
+         ('Pessoas e memória', 'mn:pess'), ('Fotos e pesquisa', 'mn:foto'),
          ('Ajustes', 'mn:aj')]
 _flat = [{"text": t, "additionalFields": {"callback_data": "=" + cb}} for t, cb in _btns]
 byname['Enviar com menu']['parameters']['inlineKeyboard']['rows'] = [{"row": {"buttons": _flat[i:i + 2]}} for i in range(0, len(_flat), 2)]
@@ -21,10 +21,10 @@ byname['Enviar com menu']['parameters']['inlineKeyboard']['rows'] = [{"row": {"b
 add_kb('menu_area', [('Ver mais', 'mn:mais{rid}'), ('Voltar ao menu', 'mn:inicio')], row_size=2)
 add_kb('menu_mais', [('Voltar à área', 'mn:a{rid}'), ('Menu', 'mn:inicio')], row_size=2)
 
-# 3) texto de /menu = texto 'inicio' do banco (lido do proprio 036 para nao divergir)
+# 3) texto de /menu = texto 'inicio' do banco (lido do proprio 037, a definicao vigente de f_menu, para nao divergir)
 import os as _os
 _dbdir = '../../agente-telegram/db' if _os.path.isdir('../../agente-telegram/db') else '../../db'
-_sql = open(_dbdir + '/036_menu_secretaria.sql', encoding='utf-8').read()
+_sql = open(_dbdir + '/037_menu_ajustes.sql', encoding='utf-8').read()
 _ini = _re.search(r'\$m\$(.*?)\$m\$', _sql, _re.S).group(1)
 assert "'" not in _ini and '\\' not in _ini and '`' not in _ini and '${' not in _ini
 _js_lines = ",\n    ".join("'" + l + "'" for l in _ini.split('\n'))

@@ -169,7 +169,7 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_mem_switches.sql | f_mem_switches(bigint) | 035_memoria_unificada.sql:105 | 1 |  |
 | f_mem_tipo.sql | f_mem_tipo(text) | 035_memoria_unificada.sql:138 | 1 |  |
 | f_mem_tokens.sql | f_mem_tokens(text) | 035_memoria_unificada.sql:127 | 1 |  |
-| f_menu.sql | f_menu(bigint, text) | 036_menu_secretaria.sql:17 | 1 |  |
+| f_menu.sql | f_menu(bigint, text) | 037_menu_ajustes.sql:7 | 2 |  |
 | f_menu_base.sql | f_menu_base(bigint, text) | 023_locais_pergunta.sql:246 | 2 | renomeada de f_menu (024_ciclo_correcoes.sql) |
 | f_menu_pre_f13.sql | f_menu_pre_f13(bigint, text) | 029_pesquisa.sql:113 | 1 | renomeada de f_menu (036_menu_secretaria.sql) |
 | f_menu_pre_m1.sql | f_menu_pre_m1(bigint, text) | 024_ciclo_correcoes.sql:179 | 1 | renomeada de f_menu (025_listas_compras.sql) |

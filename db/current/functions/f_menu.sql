@@ -1,7 +1,7 @@
 -- GERADO por db/current/build_current.py. NAO EDITAR: edite uma nova migracao e rode o script.
 -- Funcao: agente.f_menu(p_user bigint, p_key text)
--- Origem da definicao atual: 036_menu_secretaria.sql (linha 17)
--- Definicoes (migracao:linha), da mais antiga a atual: 036_menu_secretaria.sql:17
+-- Origem da definicao atual: 037_menu_ajustes.sql (linha 7)
+-- Definicoes (migracao:linha), da mais antiga a atual: 036_menu_secretaria.sql:17, 037_menu_ajustes.sql:7
 CREATE OR REPLACE FUNCTION agente.f_menu(p_user bigint, p_key text) RETURNS jsonb
 LANGUAGE plpgsql STABLE SET search_path TO 'agente', 'public' AS $f$
 DECLARE
@@ -9,7 +9,7 @@ DECLARE
   n int;
   mais boolean := false;
   t text;
-  dica text := 'Pode mandar vários pedidos juntos: eu faço todos e mostro num Feito:. Se errar, toque em Desfazer tudo.';
+  dica text := 'Pode mandar vários pedidos juntos: eu faço todos e mostro num resumo "Feito". Se errar, toque em Desfazer tudo.';
 BEGIN
   -- atalhos vindos dos botoes: mais<n> (Ver mais) e a<n> (Voltar a area)
   IF k ~ '^mais[1-9]$' THEN
@@ -43,7 +43,7 @@ Outros exemplos:
 - "me lembra amanhã às 9h de ligar pro contador"
 - "reunião sexta às 14h"
 
-Pode mandar vários pedidos juntos: eu faço todos e mostro num Feito:. Se errar, toque em Desfazer tudo.$m$;
+Pode mandar vários pedidos juntos: eu faço todos e mostro num resumo "Feito". Se errar, toque em Desfazer tudo.$m$;
     RETURN jsonb_build_object('text', t, 'kb', 'menu', 'rid', 0);
   END IF;
 
@@ -117,7 +117,7 @@ Tente dizer:
 - "esquece isso" (apago o último fato que anotei)
 
 /memoria mostra o que eu sei de você e deixa apagar.$m$
-    WHEN 8 THEN $m$Fotos, áudio e pesquisa
+    WHEN 8 THEN $m$Fotos e pesquisa
 Pode falar comigo como falaria com uma pessoa.
 
 Tente:
@@ -250,7 +250,7 @@ Memória:
 - "o que você sabe de mim?"
 - "desliga a memória" para eu parar de anotar, "liga a memória" para voltar
 Cada pessoa tem a sua memória. Ninguém vê a do outro.$m$
-  WHEN 8 THEN $m$Fotos, áudio e pesquisa: ver mais
+  WHEN 8 THEN $m$Fotos e pesquisa: ver mais
 
 Quando eu perguntar algo ("Que horas?"), responda numa mensagem só, como "às 19h".
 
