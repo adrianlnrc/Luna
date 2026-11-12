@@ -1,7 +1,7 @@
 -- GERADO por db/current/build_current.py. NAO EDITAR: edite uma nova migracao e rode o script.
 -- Funcao: agente.f_mem_add(p_user bigint, p_texto text, p_tipo text, p_origem text)
--- Origem da definicao atual: 035_memoria_unificada.sql (linha 149)
--- Definicoes (migracao:linha), da mais antiga a atual: 035_memoria_unificada.sql:149
+-- Origem da definicao atual: 037_assessor_base.sql (linha 221)
+-- Definicoes (migracao:linha), da mais antiga a atual: 035_memoria_unificada.sql:149, 037_assessor_base.sql:221
 CREATE OR REPLACE FUNCTION agente.f_mem_add(p_user bigint, p_texto text, p_tipo text DEFAULT 'fato', p_origem text DEFAULT 'ia') RETURNS jsonb
 LANGUAGE plpgsql SET search_path TO 'agente', 'public' AS $$
 DECLARE
@@ -18,7 +18,7 @@ BEGIN
   DELETE FROM user_memory WHERE user_id = p_user AND NOT ativo AND coalesce(ultimo_uso, criado_em) < now() - interval '30 days';
 
   SELECT * INTO d FROM user_memory m
-   WHERE m.user_id = p_user AND m.ativo
+   WHERE m.user_id = p_user AND m.ativo AND m.tipo <> 'criterio'
      AND (m.norm = v_norm
           OR (length(v_norm) >= 10 AND length(m.norm) >= 10 AND (position(v_norm IN m.norm) > 0 OR position(m.norm IN v_norm) > 0))
           OR (SELECT count(*) FROM (SELECT unnest(string_to_array(m.norm, ' ')) INTERSECT SELECT unnest(string_to_array(v_norm, ' '))) i)::numeric
@@ -41,7 +41,7 @@ BEGIN
   END IF;
 
   WITH over AS (
-    SELECT id FROM user_memory WHERE user_id = p_user AND ativo AND id <> v_id
+    SELECT id FROM user_memory WHERE user_id = p_user AND ativo AND tipo <> 'criterio' AND id <> v_id
      ORDER BY usos DESC, coalesce(ultimo_uso, criado_em) DESC, criado_em DESC OFFSET v_cap - 1)
   UPDATE user_memory SET ativo = false WHERE id IN (SELECT id FROM over);
   GET DIAGNOSTICS v_ev = ROW_COUNT;

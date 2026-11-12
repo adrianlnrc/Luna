@@ -35,8 +35,12 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_ai_cost_text.sql | f_ai_cost_text(bigint) | 028_custo_ia_anuais.sql:64 | 1 |  |
 | f_ai_groups.sql | f_ai_groups(bigint) | 021_locais_comandos.sql:89 | 1 |  |
 | f_ai_log.sql | f_ai_log(bigint, text, text, integer, integer, boolean) | 028_custo_ia_anuais.sql:41 | 1 |  |
+| f_ai_log_run.sql | f_ai_log_run(bigint, bigint, text, text, integer, integer, numeric, boolean) | 040_assessor_runs.sql:5 | 1 |  |
 | f_ai_num.sql | f_ai_num(numeric) | 028_custo_ia_anuais.sql:61 | 1 |  |
 | f_ai_places.sql | f_ai_places(bigint) | 021_locais_comandos.sql:84 | 1 |  |
+| f_ai_usage_brl.sql | f_ai_usage_brl(ai_usage) | 040_assessor_runs.sql:18 | 1 |  |
+| f_app_user.sql | f_app_user() | 041_rls.sql:16 | 1 |  |
+| f_assessor_snapshot.sql | f_assessor_snapshot(bigint, integer) | 038_assessor_snapshot.sql:6 | 1 |  |
 | f_batch_open.sql | f_batch_open(bigint) | 033_acoes_recentes.sql:36 | 1 |  |
 | f_batch_undo.sql | f_batch_undo(bigint, bigint) | 033_acoes_recentes.sql:237 | 1 |  |
 | f_brl.sql | f_brl(numeric) | 008_financas.sql:73 | 1 |  |
@@ -64,10 +68,13 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_card_status_text.sql | f_card_status_text(bigint) | 026_recibo_alertas.sql:267 | 1 | bloco DO/EXECUTE |
 | f_card_status_text_pre_m2.sql | f_card_status_text_pre_m2(bigint) | 013_extras.sql:157 | 1 | renomeada de f_card_status_text (026_recibo_alertas.sql) |
 | f_card_sum.sql | f_card_sum(bigint, date, date) | 013_extras.sql:79 | 1 |  |
+| f_channel_user.sql | f_channel_user(text, text) | 041_rls.sql:82 | 1 |  |
 | f_claim_due.sql | f_claim_due() | 013_extras.sql:335 | 4 |  |
 | f_command_data.sql | f_command_data(bigint) | 028_custo_ia_anuais.sql:140 | 1 | bloco DO/EXECUTE |
 | f_command_data_base.sql | f_command_data_base(bigint) | 021_locais_comandos.sql:95 | 1 | renomeada de f_command_data (023_locais_pergunta.sql) |
 | f_command_data_pre_m4.sql | f_command_data_pre_m4(bigint) | 023_locais_pergunta.sql:227 | 1 | renomeada de f_command_data (028_custo_ia_anuais.sql) |
+| f_consent_ok.sql | f_consent_ok(bigint, text) | 037_assessor_base.sql:55 | 1 |  |
+| f_consent_set.sql | f_consent_set(bigint, text, text, boolean) | 037_assessor_base.sql:60 | 1 |  |
 | f_contact_save.sql | f_contact_save(bigint, text, text, boolean) | 007_contatos.sql:28 | 1 |  |
 | f_contacts.sql | f_contacts(bigint, jsonb) | 021_locais_comandos.sql:73 | 1 |  |
 | f_contacts_base.sql | f_contacts_base(bigint, jsonb) | 014_contatos_convites.sql:109 | 1 | renomeada de f_contacts (021_locais_comandos.sql) |
@@ -76,12 +83,15 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_create_reminder.sql | f_create_reminder(bigint, text, timestamp with time zone, boolean, integer, text, text, text) | 003_functions.sql:7 | 1 |  |
 | f_create_supply.sql | f_create_supply(bigint, text, integer, numeric, date, integer, text, time without time zone, integer) | 024_ciclo_correcoes.sql:85 | 1 |  |
 | f_create_supply_base.sql | f_create_supply_base(bigint, text, integer, numeric, date, integer, text, time, integer) | 006_cadastro_simples.sql:48 | 1 | renomeada de f_create_supply (024_ciclo_correcoes.sql) |
+| f_crit_add.sql | f_crit_add(bigint, text, text) | 037_assessor_base.sql:347 | 1 |  |
+| f_crit_txt.sql | f_crit_txt(bigint) | 037_assessor_base.sql:372 | 1 |  |
 | f_ct_de.sql | f_ct_de(text) | 014_contatos_convites.sql:45 | 1 |  |
 | f_ct_disp.sql | f_ct_disp(text) | 014_contatos_convites.sql:38 | 1 |  |
 | f_ct_find.sql | f_ct_find(bigint, text) | 014_contatos_convites.sql:20 | 1 |  |
 | f_ct_group_find.sql | f_ct_group_find(bigint, text) | 014_contatos_convites.sql:32 | 1 |  |
 | f_ct_iso.sql | f_ct_iso(timestamp with time zone, text) | 014_contatos_convites.sql:51 | 1 |  |
 | f_days_text.sql | f_days_text(integer) | 013_extras.sql:85 | 1 |  |
+| f_decisions_txt.sql | f_decisions_txt(bigint) | 040_assessor_runs.sql:131 | 1 |  |
 | f_doc_caption.sql | f_doc_caption(text, text) | 015_documentos.sql:183 | 1 |  |
 | f_doc_expiry_apply.sql | f_doc_expiry_apply(bigint, bigint, date, integer) | 015_documentos.sql:155 | 1 |  |
 | f_doc_folder_ensure.sql | f_doc_folder_ensure(bigint, text) | 015_documentos.sql:106 | 1 |  |
@@ -144,6 +154,12 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_find_pessoa.sql | f_find_pessoa(bigint, text) | 035_memoria_unificada.sql:374 | 1 |  |
 | f_find_supply.sql | f_find_supply(bigint, text) | 006_cadastro_simples.sql:29 | 1 |  |
 | f_group_save.sql | f_group_save(bigint, text, text[]) | 014_contatos_convites.sql:60 | 2 |  |
+| f_insight_answer.sql | f_insight_answer(bigint, bigint, text) | 039_insights.sql:223 | 1 |  |
+| f_insight_mode.sql | f_insight_mode(bigint, text) | 039_insights.sql:267 | 1 |  |
+| f_insight_prefs.sql | f_insight_prefs(bigint) | 039_insights.sql:31 | 1 |  |
+| f_insights.sql | f_insights(bigint, jsonb) | 039_insights.sql:44 | 1 |  |
+| f_insights_expire.sql | f_insights_expire(bigint) | 039_insights.sql:242 | 1 |  |
+| f_insights_pick.sql | f_insights_pick(bigint, jsonb, text) | 039_insights.sql:186 | 1 |  |
 | f_invite_prepare.sql | f_invite_prepare(bigint, jsonb) | 023_locais_pergunta.sql:29 | 3 |  |
 | f_list_lugares.sql | f_list_lugares(bigint) | 035_memoria_unificada.sql:260 | 1 |  |
 | f_list_pessoas.sql | f_list_pessoas(bigint) | 035_memoria_unificada.sql:233 | 1 |  |
@@ -158,11 +174,11 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_ls_menu_ins.sql | f_ls_menu_ins(text, text) | 025_listas_compras.sql:16 | 1 |  |
 | f_ls_msg.sql | f_ls_msg(text) | 016_listas_notas.sql:118 | 1 |  |
 | f_ls_render.sql | f_ls_render(bigint) | 016_listas_notas.sql:103 | 1 |  |
-| f_mem_add.sql | f_mem_add(bigint, text, text, text) | 035_memoria_unificada.sql:149 | 1 |  |
+| f_mem_add.sql | f_mem_add(bigint, text, text, text) | 037_assessor_base.sql:221 | 2 |  |
 | f_mem_forget.sql | f_mem_forget(bigint, text) | 035_memoria_unificada.sql:334 | 1 |  |
-| f_mem_list.sql | f_mem_list(bigint, text) | 035_memoria_unificada.sql:277 | 1 |  |
+| f_mem_list.sql | f_mem_list(bigint, text) | 037_assessor_base.sql:291 | 2 |  |
 | f_mem_prompt_txt.sql | f_mem_prompt_txt(bigint, text) | 035_memoria_unificada.sql:220 | 1 |  |
-| f_mem_relevant_txt.sql | f_mem_relevant_txt(bigint, text, integer) | 035_memoria_unificada.sql:197 | 1 |  |
+| f_mem_relevant_txt.sql | f_mem_relevant_txt(bigint, text, integer) | 037_assessor_base.sql:268 | 2 |  |
 | f_mem_set_switch.sql | f_mem_set_switch(bigint, text, boolean) | 035_memoria_unificada.sql:112 | 1 |  |
 | f_mem_sw.sql | f_mem_sw(bigint, text) | 035_memoria_unificada.sql:88 | 1 |  |
 | f_mem_switch_name.sql | f_mem_switch_name(text) | 035_memoria_unificada.sql:96 | 1 |  |
@@ -185,9 +201,13 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_notes.sql | f_notes(bigint, jsonb) | 016_listas_notas.sql:335 | 1 |  |
 | f_nt_search.sql | f_nt_search(bigint, text, integer) | 016_listas_notas.sql:297 | 1 |  |
 | f_nt_snip.sql | f_nt_snip(text, integer) | 016_listas_notas.sql:327 | 1 |  |
+| f_oauth_state_use.sql | f_oauth_state_use(text) | 041_rls.sql:113 | 1 |  |
 | f_offer_accept.sql | f_offer_accept(bigint, text, text, text, text, text) | 035_memoria_unificada.sql:459 | 1 |  |
 | f_offer_candidates.sql | f_offer_candidates(bigint, text, text) | 035_memoria_unificada.sql:407 | 1 |  |
 | f_offer_decline.sql | f_offer_decline(bigint, text, text) | 035_memoria_unificada.sql:513 | 1 |  |
+| f_pending_cancel.sql | f_pending_cancel(bigint, bigint) | 037_assessor_base.sql:174 | 1 |  |
+| f_pending_claim.sql | f_pending_claim(bigint, bigint) | 037_assessor_base.sql:147 | 1 |  |
+| f_pending_finish.sql | f_pending_finish(bigint, bigint, boolean, jsonb) | 037_assessor_base.sql:168 | 1 |  |
 | f_place_cb.sql | f_place_cb(bigint, text) | 023_locais_pergunta.sql:175 | 1 |  |
 | f_place_find.sql | f_place_find(bigint, text) | 021_locais_comandos.sql:17 | 1 |  |
 | f_place_is_name.sql | f_place_is_name(text) | 023_locais_pergunta.sql:20 | 1 |  |
@@ -215,6 +235,8 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_projects_cb.sql | f_projects_cb(bigint, text) | 017_projetos.sql:380 | 1 |  |
 | f_projects_summary.sql | f_projects_summary(bigint) | 017_projetos.sql:420 | 1 |  |
 | f_provide_time.sql | f_provide_time(bigint, bigint, timestamp with time zone) | 003_functions.sql:54 | 1 |  |
+| f_quota_msg.sql | f_quota_msg(bigint) | 040_assessor_runs.sql:40 | 1 |  |
+| f_quota_state.sql | f_quota_state(bigint) | 040_assessor_runs.sql:26 | 1 |  |
 | f_ra_log.sql | f_ra_log(bigint, text, bigint, text, text, text) | 033_acoes_recentes.sql:47 | 1 |  |
 | f_ra_trg_fin.sql | f_ra_trg_fin() | 033_acoes_recentes.sql:76 | 1 |  |
 | f_ra_trg_list_items.sql | f_ra_trg_list_items() | 033_acoes_recentes.sql:100 | 1 |  |
@@ -222,6 +244,7 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_ra_trg_reminders.sql | f_ra_trg_reminders() | 033_acoes_recentes.sql:60 | 1 |  |
 | f_recent_actions_txt.sql | f_recent_actions_txt(bigint) | 033_acoes_recentes.sql:113 | 1 |  |
 | f_recent_correct.sql | f_recent_correct(bigint, jsonb) | 033_acoes_recentes.sql:286 | 1 |  |
+| f_refusal_pattern.sql | f_refusal_pattern(bigint) | 040_assessor_runs.sql:152 | 1 |  |
 | f_reminder_advance.sql | f_reminder_advance(bigint) | 028_custo_ia_anuais.sql:236 | 1 | bloco DO/EXECUTE |
 | f_reminder_advance_base.sql | f_reminder_advance_base(bigint) | 013_extras.sql:238 | 1 | renomeada de f_reminder_advance (028_custo_ia_anuais.sql) |
 | f_reminder_advance_yearly.sql | f_reminder_advance_yearly(bigint) | 028_custo_ia_anuais.sql:188 | 1 |  |
@@ -235,11 +258,17 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_research_gate.sql | f_research_gate(bigint) | 029_pesquisa.sql:53 | 1 |  |
 | f_research_log.sql | f_research_log(bigint, bigint, text, integer, integer, integer, boolean) | 029_pesquisa.sql:71 | 1 |  |
 | f_resolve_invitees.sql | f_resolve_invitees(bigint, text[]) | 035_memoria_unificada.sql:532 | 3 |  |
+| f_rls_apply.sql | f_rls_apply() | 041_rls.sql:40 | 1 |  |
+| f_run_close.sql | f_run_close(bigint, bigint, jsonb) | 040_assessor_runs.sql:58 | 1 |  |
+| f_run_open.sql | f_run_open(bigint, text, text) | 040_assessor_runs.sql:51 | 1 |  |
+| f_run_result.sql | f_run_result(bigint, bigint, text) | 040_assessor_runs.sql:84 | 1 |  |
+| f_runs_expire.sql | f_runs_expire(bigint) | 040_assessor_runs.sql:101 | 1 |  |
 | f_safe_date.sql | f_safe_date(text) | 008_financas.sql:77 | 1 |  |
 | f_series_next.sql | f_series_next(bigint) | 012_agenda.sql:99 | 1 |  |
 | f_set_lead.sql | f_set_lead(bigint, bigint, integer) | 003_functions.sql:34 | 1 |  |
 | f_set_pref.sql | f_set_pref(bigint, integer, time, integer) | 003_functions.sql:167 | 1 |  |
 | f_set_prefs.sql | f_set_prefs(bigint, jsonb) | 034_tom_preferencias.sql:2 | 3 |  |
+| f_signup.sql | f_signup(text, text, text, text, boolean) | 041_rls.sql:89 | 1 |  |
 | f_suggest_pick.sql | f_suggest_pick(bigint, boolean) | 035_memoria_unificada.sql:561 | 1 |  |
 | f_summary_candidates.sql | f_summary_candidates() | 011_planejamento.sql:332 | 3 |  |
 | f_summary_data.sql | f_summary_data(bigint) | 026_recibo_alertas.sql:286 | 1 | bloco DO/EXECUTE |
@@ -252,3 +281,7 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_supply_schedule.sql | f_supply_schedule(bigint, text, text, boolean, text) | 006_cadastro_simples.sql:88 | 1 |  |
 | f_supply_taken.sql | f_supply_taken(bigint, text) | 006_cadastro_simples.sql:106 | 2 |  |
 | f_tip.sql | f_tip(bigint) | 022_menu.sql:61 | 1 |  |
+| f_user_export.sql | f_user_export(bigint) | 040_assessor_runs.sql:205 | 1 |  |
+| f_user_purge.sql | f_user_purge(bigint) | 040_assessor_runs.sql:227 | 1 |  |
+| f_user_tables.sql | f_user_tables() | 040_assessor_runs.sql:198 | 1 |  |
+| f_value_line.sql | f_value_line(bigint) | 040_assessor_runs.sql:117 | 1 |  |

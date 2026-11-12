@@ -1,7 +1,7 @@
 -- GERADO por db/current/build_current.py. NAO EDITAR: edite uma nova migracao e rode o script.
 -- Funcao: agente.f_mem_list(p_user bigint, p_filtro text)
--- Origem da definicao atual: 035_memoria_unificada.sql (linha 277)
--- Definicoes (migracao:linha), da mais antiga a atual: 035_memoria_unificada.sql:277
+-- Origem da definicao atual: 037_assessor_base.sql (linha 291)
+-- Definicoes (migracao:linha), da mais antiga a atual: 035_memoria_unificada.sql:277, 037_assessor_base.sql:291
 CREATE OR REPLACE FUNCTION agente.f_mem_list(p_user bigint, p_filtro text DEFAULT '') RETURNS jsonb
 LANGUAGE plpgsql STABLE SET search_path TO 'agente', 'public' AS $$
 DECLARE
@@ -43,7 +43,7 @@ BEGIN
               ORDER BY m.tipo, m.id LOOP
       nm := nm + 1;
       items := items || jsonb_build_array(jsonb_build_object('id', r.id, 'tipo', r.tipo, 'texto', r.texto));
-      sec := sec || E'\n- #' || r.id || ' ' || r.texto || ' (' || CASE r.tipo WHEN 'habito' THEN 'hábito' WHEN 'preferencia' THEN 'preferência' WHEN 'relacao' THEN 'relação' ELSE 'fato' END || ')';
+      sec := sec || E'\n- #' || r.id || ' ' || r.texto || ' (' || CASE r.tipo WHEN 'habito' THEN 'hábito' WHEN 'preferencia' THEN 'preferência' WHEN 'relacao' THEN 'relação' WHEN 'criterio' THEN 'critério' ELSE 'fato' END || ')';
     END LOOP;
     IF v_q IS NULL OR nm > 0 THEN
       t := t || 'Memória' || CASE WHEN v_tipo IS NOT NULL THEN ' (' || v_tipo || ')' ELSE '' END || ' (' || nm || '):'
