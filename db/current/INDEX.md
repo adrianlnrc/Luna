@@ -264,6 +264,7 @@ Gerado por `build_current.py`. Colunas: arquivo, assinatura (tipos IN), migracao
 | f_run_result.sql | f_run_result(bigint, bigint, text) | 040_assessor_runs.sql:84 | 1 |  |
 | f_runs_expire.sql | f_runs_expire(bigint) | 040_assessor_runs.sql:101 | 1 |  |
 | f_safe_date.sql | f_safe_date(text) | 008_financas.sql:77 | 1 |  |
+| f_search_gate.sql | f_search_gate(bigint, integer) | 042_assessor_ajustes.sql:8 | 1 |  |
 | f_series_next.sql | f_series_next(bigint) | 012_agenda.sql:99 | 1 |  |
 | f_set_lead.sql | f_set_lead(bigint, bigint, integer) | 003_functions.sql:34 | 1 |  |
 | f_set_pref.sql | f_set_pref(bigint, integer, time, integer) | 003_functions.sql:167 | 1 |  |
