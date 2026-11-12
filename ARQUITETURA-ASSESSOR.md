@@ -256,3 +256,4 @@ valor ou se a resposta sobre SaaS for "sim".
 |---|---|---|---|
 | 1 | O que diferencia o assessor? | Cruzar áreas e tomar iniciativa com critério; busca como ferramenta | Seções 2 e 3 |
 | 2 | Pessoal ou SaaS? | **Protótipo de um SaaS** (12/11/2026) | A arquitetura da seção 8 (agente em código) é o destino; a migração por estrangulamento é o caminho. Multi-tenant, OAuth por usuário e RLS entram no desenho desde o primeiro serviço Python |
+| 3 | Canal do SaaS? | **Telegram agora, canal isolado no serviço** (12/11/2026) | Interface única de canal (receber, enviar texto, botões, arquivo); botões viram ação pendente genérica em vez de callback do Telegram; `assessor_runs` grava o canal para separar custo de IA e de canal; WhatsApp só depois de conferir política e preços da Meta |
